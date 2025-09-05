@@ -1,4 +1,6 @@
+import sys
 import requests
+import json
 
 def emotion_detector(text_to_analyze):
     host = 'https://sn-watson-emotion.labs.skills.network'
@@ -8,4 +10,16 @@ def emotion_detector(text_to_analyze):
 
     response = requests.post(URL, json=Input, headers=Headers)
 
-    return response.text
+    jsonresponse = json.loads(response.text)
+    emotions = jsonresponse['emotionPredictions'][0]['emotion']
+
+    max = -sys.maxsize - 1
+    emotion = 'none'
+    for k, v in emotions.items():
+        if v > max:
+            emotion = k
+            max = v
+
+    emotions['dominant_emotion'] = emotion
+
+    return emotions
